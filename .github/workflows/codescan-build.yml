@@ -38,7 +38,7 @@ jobs:
         s3_bucket: codeguru-reviewer-test-repo
 
     - name: Upload review result
-      if: ${{ github.event_name != 'push' }}
+      # if: ${{ github.event_name != 'push' }}
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: codeguru-results.sarif.json # Your results file will be named codeguru-results.sarif.json
