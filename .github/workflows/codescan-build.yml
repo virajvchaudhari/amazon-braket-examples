@@ -35,7 +35,6 @@ jobs:
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
       with:
-        build_path: target
         s3_bucket: codeguru-reviewer-test-repo
 
     - name: Upload review result
