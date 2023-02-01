@@ -1,4 +1,4 @@
-name: CodeScan Config
+name: CodeGuru Review
 
 on:
   push:
