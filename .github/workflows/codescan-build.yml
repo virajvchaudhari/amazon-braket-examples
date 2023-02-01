@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-      - codescan
   pull_request:
     branches:
-      - main 
       - codescan
 
 jobs:
