@@ -24,6 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
+        ref: ${{ github.event.pull_request.head.ref }}
         fetch-depth: 0 # This is a required field for CodeGuru
     
     - name: Configure AWS Credentials
@@ -37,7 +38,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-        
+
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
       with:
