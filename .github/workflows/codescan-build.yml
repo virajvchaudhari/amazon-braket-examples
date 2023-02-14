@@ -39,25 +39,31 @@ jobs:
       with:
         python-version: 3.7
 
-    - name: CodeGuru Reviewer
-      uses: aws-actions/codeguru-reviewer@v1.1
-      with:
-        # source_commit: 
-        s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
-    
     - name: Print value of pull_request.files
-      run: echo "pull_request.files are - ${{ github.event.pull_request.files }}"
+      if: github.event_name == 'pull_request'
+          echo "This is a pull request event"
+      run: echo "pull_request.files - ${{ github.event.pull_request.files }}"
 
-    - name: Filter results
-      run: |
-        CHANGED_FILES=$(jq '.pull_request.files[] | select(.status == "modified").filename' < ${{ github.event_path }})
-        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test($CHANGED_FILES))" codeguru-results.sarif.json > filtered-results.sarif.json
-      env:
-        GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
-        GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
 
-    - name: Upload review result
-      if: ${{ github.event_name != 'push' }}
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: filtered-results.sarif.json # Results file will be named codeguru-results.sarif.json
+    # - name: CodeGuru Reviewer
+    #   uses: aws-actions/codeguru-reviewer@v1.1
+    #   with:
+    #     # source_commit: 
+    #     s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+    
+    # - name: Print value of pull_request.files
+    #   run: echo "pull_request.files are - ${{ github.event.pull_request.files }}"
+
+    # - name: Filter results
+    #   run: |
+    #     CHANGED_FILES=$(jq '.pull_request.files[] | select(.status == "modified").filename' < ${{ github.event_path }})
+    #     jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test($CHANGED_FILES))" codeguru-results.sarif.json > filtered-results.sarif.json
+    #   env:
+    #     GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+    #     GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
+
+    # - name: Upload review result
+    #   if: ${{ github.event_name != 'push' }}
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: filtered-results.sarif.json # Results file will be named codeguru-results.sarif.json
