@@ -41,8 +41,10 @@ jobs:
 
     - name: Print value of pull_request.files
       if: github.event_name == 'pull_request'
-          echo "This is a pull request event"
-      run: echo "pull_request.files - ${{ github.event.pull_request.files }}"
+      run: 
+        echo "This is a pull request event"
+        echo "pull_request.files - ${{ github.event.pull_request.files }}"
+
 
 
     # - name: CodeGuru Reviewer
