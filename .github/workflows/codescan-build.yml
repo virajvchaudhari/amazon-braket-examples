@@ -38,6 +38,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    
+    - name: Print list of changed files
+      run: |
+        if [ -z "${{ github.event.pull_request.changed_files }}" ]; then
+          echo "pull_request.changed_files is not available for this event"
+        else
+          echo "Changed files: ${{ toJson(github.event.pull_request.changed_files) }}"
+        fi
 
     - name: Print value of pull_request.files
       if: github.event_name == 'pull_request'
@@ -45,8 +53,8 @@ jobs:
         echo "This is a pull request event"
         echo "pull_request.files - ${{ github.event.pull_request.files }}"
 
-    - name: List the changed files
-      run: ls -lR
+
+    
 
     # - name: CodeGuru Reviewer
     #   uses: aws-actions/codeguru-reviewer@v1.1
