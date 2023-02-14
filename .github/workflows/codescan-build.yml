@@ -44,6 +44,9 @@ jobs:
       with:
         # source_commit: 
         s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+    
+    - name: Print value of pull_request.files
+      run: echo "pull_request.files: ${{ github.event.pull_request.files }}"
 
     - name: Filter results
       run: |
