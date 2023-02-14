@@ -24,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
+        ref: ${{ github.event.pull_request.head.ref }}
         fetch-depth: 0 # This is a required field for CodeGuru
     
     - name: Configure AWS Credentials
@@ -45,9 +45,16 @@ jobs:
         # source_commit: 
         s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
 
+    - name: Filter results
+      run: |
+        CHANGED_FILES=$(jq '.pull_request.files[] | select(.status == "modified").filename' < ${{ github.event_path }})
+        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test($CHANGED_FILES))" codeguru-results.sarif.json > filtered-results.sarif.json
+      env:
+        GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+        GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
 
     - name: Upload review result
       if: ${{ github.event_name != 'push' }}
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: codeguru-results.sarif.json # Results file will be named codeguru-results.sarif.json
+        sarif_file: filtered-results.sarif.json # Results file will be named codeguru-results.sarif.json
