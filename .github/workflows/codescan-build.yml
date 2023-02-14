@@ -39,28 +39,28 @@ jobs:
       with:
         python-version: 3.7
     
-    - name: Print list of changed files
+    - name: Get changed files
+      uses: tj-actions/changed-files@v35
+      id: changed_files    
+
+    - name: CodeGuru Reviewer
+      uses: aws-actions/codeguru-reviewer@v1.1
+      with:
+        # source_commit: 
+        s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+
+    - name: Filter results
       run: |
-        if [ -z "${{ github.event.pull_request.changed_files }}" ]; then
-          echo "pull_request.changed_files is not available for this event"
-        else
-          echo "Changed files: ${{ toJson(github.event.pull_request.changed_files) }}"
-        fi
+        CHANGED_FILES=$(echo "${{ steps.changed_files.outputs.files }}")
+        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test($CHANGED_FILES))" codeguru-results.sarif.json > filtered-results.sarif.json
+      env:
+        GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+        GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
 
-    - name: Print value of pull_request.files
-      if: github.event_name == 'pull_request'
-      run: 
-        echo "This is a pull request event"
-        echo "pull_request.files - ${{ github.event.pull_request.files }}"
-
-
-    
-
-    # - name: CodeGuru Reviewer
-    #   uses: aws-actions/codeguru-reviewer@v1.1
-    #   with:
-    #     # source_commit: 
-    #     s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+    - name: Upload filtered results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: filtered-results.sarif.json
     
     # - name: Print value of pull_request.files
     #   run: echo "pull_request.files are - ${{ github.event.pull_request.files }}"
