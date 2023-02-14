@@ -52,7 +52,7 @@ jobs:
     - name: Filter results
       run: |
         CHANGED_FILES=$(echo "${{ steps.changed_files.outputs.files }}")
-        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test($CHANGED_FILES))" codeguru-results.sarif.json > filtered-results.sarif.json
+        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test(\"$CHANGED_FILES\"))" codeguru-results.sarif.json > filtered-results.sarif.json
       env:
         GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
         GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
