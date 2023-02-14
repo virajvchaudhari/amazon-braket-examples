@@ -41,23 +41,29 @@ jobs:
     
     - name: Get changed files
       uses: tj-actions/changed-files@v35
-      id: changed_files    
+      id: changed_files
 
-    - name: CodeGuru Reviewer
-      uses: aws-actions/codeguru-reviewer@v1.1
-      with:
-        # source_commit: 
-        s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
-
-    - name: Filter results
+    - name: List all changed files
       run: |
-        CHANGED_FILES=$(echo "${{ steps.changed_files.outputs.files }}")
-        jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test(\"$CHANGED_FILES\"))" codeguru-results.sarif.json > filtered-results.sarif.json
-      env:
-        GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
-        GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo "$file was changed"
+        done   
 
-    - name: Upload filtered results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: filtered-results.sarif.json
+    # - name: CodeGuru Reviewer
+    #   uses: aws-actions/codeguru-reviewer@v1.1
+    #   with:
+    #     # source_commit: 
+    #     s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+
+    # - name: Filter results
+    #   run: |
+    #     CHANGED_FILES=$(echo "${{ steps.changed_files.outputs.files }}")
+    #     jq "select(.tool.name == \"AWS CodeGuru Reviewer\") | .results[] | select(.location.physicalLocation.artifactLocation.uri | test(\"$CHANGED_FILES\"))" codeguru-results.sarif.json > filtered-results.sarif.json
+    #   env:
+    #     GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+    #     GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
+
+    # - name: Upload filtered results
+    #   uses: github/codeql-action/upload-sarif@v2
+    #   with:
+    #     sarif_file: filtered-results.sarif.json
