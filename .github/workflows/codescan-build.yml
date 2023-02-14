@@ -24,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0 # This is a required field for CodeGuru
     
     - name: Configure AWS Credentials
@@ -42,7 +42,9 @@ jobs:
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
       with:
+        # source_commit: 
         s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
+
 
     - name: Upload review result
       if: ${{ github.event_name != 'push' }}
