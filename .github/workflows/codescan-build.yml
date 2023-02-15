@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 1 # This is a required field for CodeGuru
+        fetch-depth: 2 # This is a required field for CodeGuru
 
     - name: List modified files
       run: |
