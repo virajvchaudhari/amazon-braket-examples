@@ -49,7 +49,7 @@ jobs:
     - name: Printing
       run: |
         echo "Modified and Added Files"
-        echo "${{ steps.changed_files.outputs.json | fromJSON | .added_modified }}"
+        echo "${{ steps.changed_files.outputs.added_modified }}"
 
 
     
