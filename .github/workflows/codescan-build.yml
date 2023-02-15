@@ -30,7 +30,7 @@ jobs:
     - name: List modified files
       run: |
         echo "Modified files:"
-        git diff --name-only main...${{ github.head_ref }}
+        git diff --name-only main...${{ github.event.pull_request.head.sha }} --
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
