@@ -25,12 +25,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 2 # This is a required field for CodeGuru
+        fetch-depth: 0 # fetch the entire repository
+        path: ${{ join(github.event.pull_request.changed_files, ',') }}
 
     - name: List modified files
       run: |
         echo "Modified files:"
         git diff --name-only main...${{ github.event.pull_request.head.sha }} --
+
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
