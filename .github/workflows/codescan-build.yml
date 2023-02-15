@@ -33,6 +33,7 @@ jobs:
       run: |
         echo "List Files path:"
         pwd
+        echo "GitHub workspace path: ${{ github.workspace }}"
         echo "Modified files:"
         git diff --name-only main...${{ github.event.pull_request.head.sha }} --
 
