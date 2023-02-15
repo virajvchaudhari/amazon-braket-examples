@@ -43,11 +43,14 @@ jobs:
     - name: Check changed files
       uses: jitterbit/get-changed-files@v1
       id: changed_files
+      env:
+        FORMAT: "json"
     
     - name: Printing
       run: |
         echo "Modified and Added Files"
-        echo "${{ steps.abc.outputs.added_modified }}"
+        echo "${{ steps.changed_files.outputs.json | fromJSON | .added_modified }}"
+
 
     
     # - name: Get changed files
