@@ -25,7 +25,12 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 0 # This is a required field for CodeGuru
+        fetch-depth: 1 # This is a required field for CodeGuru
+
+    - name: List modified files
+      run: |
+        echo "Modified files:"
+        git diff --name-only main...${{ github.event.pull_request.head.sha }}
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -38,43 +43,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+        
+    - name: CodeGuru Reviewer
+      uses: aws-actions/codeguru-reviewer@v1.1
+      with:
+        s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
 
-    # - uses: actions/checkout@v2.1.0
-    - name: Check changed files
-      uses: jitterbit/get-changed-files@v1
-      id: changed_files
-      env:
-        FORMAT: "json"
-    
-    - name: Printing
-      run: |
-        echo "Modified and Added Files"
-        echo "${{ steps.changed_files.outputs.added_modified }}"
-
-
-    
-    # - name: Get changed files
-    #   uses: tj-actions/changed-files@v35
-    #   id: changed_files   
-
-
-    # - name: CodeGuru Reviewer
-    #   uses: aws-actions/codeguru-reviewer@v1.1
-    #   with:
-    #     source_commit: ${{ github.event.pull_request.head.sha }}
-    #     s3_bucket: codeguru-reviewer-results-bucket-do-not-delete
-
-    # - name: Filter results
-    #   run: |
-    #     CHANGED_FILES=$(echo "${{ steps.changed_files.outputs.files }}")
-    #     jq "select(.tool.driver.name == \"AWSCodeGuruReviewer\") | .runs[] | select(.locations[].physicalLocation.artifactLocation.uri | inside(env.CHANGED_FILES)) | select(.resultLevel != \"note\")" codeguru-results.sarif.json > filtered-results.txt
-
-    # - name: Convert to JSON
-    #   run: cat filtered-results.txt | jq -R 'split("\n") | {files - .}'
-
-    # - name: Upload filtered results
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: filtered-results
-    #     path: filtered-results.sarif.json
-
+    - name: Upload review result
+      if: ${{ github.event_name != 'push' }}
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: codeguru-results.sarif.json # Results file will be named codeguru-results.sarif.json
