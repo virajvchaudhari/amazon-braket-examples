@@ -31,6 +31,8 @@ jobs:
     - name: List modified files
       working-directory: ${{ github.workspace }}
       run: |
+        echo "List Files path:"
+        ls
         echo "Modified files:"
         git diff --name-only main...${{ github.event.pull_request.head.sha }} --
 
