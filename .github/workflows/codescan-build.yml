@@ -24,7 +24,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0 # This is a required field for CodeGuru
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 1 # fetch the entire repository
+
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
