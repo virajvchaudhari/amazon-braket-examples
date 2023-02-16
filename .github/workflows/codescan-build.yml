@@ -25,17 +25,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 0 # fetch the entire repository
-        path: ${{ join(github.event.pull_request.changed_files, ',') }}
-
-    - name: List modified files
-      working-directory: ${{ github.workspace }}
-      run: |
-        echo "List Files path:"
-        pwd
-        echo "GitHub workspace path: ${{ github.workspace }}"
-        echo "Modified files:"
-        git diff --name-only main...${{ github.event.pull_request.head.sha }} --
+        fetch-depth: 1 # fetch the entire repository
 
     
     - name: Configure AWS Credentials
