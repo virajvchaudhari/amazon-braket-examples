@@ -33,9 +33,6 @@ EXCLUDED_NOTEBOOKS = [
     "4_Simulation_with_GPUs.ipynb",
     "5_Multiple_GPU_simulations.ipynb",
     "6_Distributed_state_vector_simulations.ipynb",
-    # Notebooks that require devices to be online
-    "2_Running_quantum_circuits_on_QPU_devices.ipynb",
-    "Verbatim_Compilation.ipynb",
     # Simulator TN1 notebook, remove when TN1 issues are fixed
     "TN1_demo_local_vs_non-local_random_circuits.ipynb",
     # Mitiq notebooks require separate test setup and dependencies
@@ -44,6 +41,12 @@ EXCLUDED_NOTEBOOKS = [
     "2_Zero_noise_extrapolation_with_mitiq.ipynb",
     "3_Twirling_with_program_sets.ipynb",
     "4_Error_mitigation_workflow_with_mitiq.ipynb",
+]
+
+# Only run these notebooks during QPU mock testing
+ONLY_RUN = [
+    "2_Running_quantum_circuits_on_QPU_devices.ipynb",
+    "Verbatim_Compilation.ipynb",
 ]
 
 if (
@@ -94,6 +97,8 @@ def get_mock_paths(notebook_dir, notebook_file):
 def test_all_notebooks(notebook_dir, notebook_file, mock_level):
     if notebook_file in EXCLUDED_NOTEBOOKS:
         pytest.skip(f"Skipping Notebook: '{notebook_file}'")
+    if notebook_file not in ONLY_RUN:
+        pytest.skip(f"Skipping Notebook (not in QPU mock test set): '{notebook_file}'")
     os.chdir(notebook_dir)
 
     path_to_utils, path_to_mocks = get_mock_paths(notebook_dir, notebook_file)
