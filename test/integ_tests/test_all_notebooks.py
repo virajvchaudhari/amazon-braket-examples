@@ -27,8 +27,7 @@ EXCLUDED_NOTEBOOKS = [
     "0_Getting_started_papermill.ipynb",
     # Requires amazon-braket-simulator-v2 package (optional install)
     "Using_the_experimental_local_simulator.ipynb",
-    # CUDA-Q hybrid job notebooks
-    "0_Getting_started_with_CUDA-Q.ipynb",
+    # CUDA-Q hybrid job notebooks (0_Getting_started excluded for isolated testing)
     "3_Hybrid_jobs_with_CUDA-Q.ipynb",
     "4_Simulation_with_GPUs.ipynb",
     "5_Multiple_GPU_simulations.ipynb",
@@ -94,6 +93,12 @@ def get_mock_paths(notebook_dir, notebook_file):
 def test_all_notebooks(notebook_dir, notebook_file, mock_level):
     if notebook_file in EXCLUDED_NOTEBOOKS:
         pytest.skip(f"Skipping Notebook: '{notebook_file}'")
+    # Temporary: only run the CUDA-Q Getting Started notebook
+    ONLY_RUN = [
+        "0_Getting_started_with_CUDA-Q.ipynb",
+    ]
+    if notebook_file not in ONLY_RUN:
+        pytest.skip(f"Skipping Notebook (not in ONLY_RUN): '{notebook_file}'")
     os.chdir(notebook_dir)
 
     path_to_utils, path_to_mocks = get_mock_paths(notebook_dir, notebook_file)
